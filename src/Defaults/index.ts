@@ -84,6 +84,7 @@ export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
 	generateHighQualityLinkPreview: false,
 	enableAutoSessionRecreation: true,
 	enableRecentMessageCache: true,
+	enablePlaceholderResend: true,
 	options: {},
 	appStateMacVerification: {
 		patch: false,

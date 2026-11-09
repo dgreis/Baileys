@@ -108,8 +108,15 @@ function isValidEnforcementType(value: string | undefined): value is ReachoutTim
 }
 
 export const makeMessagesRecvSocket = (config: SocketConfig) => {
-	const { logger, retryRequestDelayMs, maxMsgRetryCount, getMessage, shouldIgnoreJid, enableAutoSessionRecreation } =
-		config
+	const {
+		logger,
+		retryRequestDelayMs,
+		maxMsgRetryCount,
+		getMessage,
+		shouldIgnoreJid,
+		enableAutoSessionRecreation,
+		enablePlaceholderResend
+	} = config
 	const sock = makeMessagesSocket(config)
 	const {
 		userDevicesCache,
@@ -634,7 +641,7 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 			}
 		}
 
-		if (retryCount <= 2) {
+		if (enablePlaceholderResend && retryCount <= 2) {
 			// Use new retry manager for phone requests if available
 			if (messageRetryManager) {
 				// Schedule phone request with delay (like whatsmeow)
@@ -1652,6 +1659,12 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 						const messageAge = unixTimestampSeconds() - toNumber(msg.messageTimestamp)
 						if (messageAge > PLACEHOLDER_MAX_AGE_SECONDS) {
 							logger.debug({ msgId: msg.key.id, messageAge }, 'skipping placeholder resend for old message')
+							acked = true
+							return sendMessageAck(node)
+						}
+
+						if (!enablePlaceholderResend) {
+							logger.debug({ msgId: msg.key.id }, 'placeholder resend disabled, skipping')
 							acked = true
 							return sendMessageAck(node)
 						}

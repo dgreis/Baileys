@@ -110,6 +110,14 @@ export type SocketConfig = {
 	enableRecentMessageCache: boolean
 
 	/**
+	 * Automatically ask the primary phone to resend messages that could not be decrypted
+	 * or arrived without content (PLACEHOLDER_MESSAGE_RESEND peer data operation).
+	 * The phone shows a "Finished syncing" notification for each request it answers.
+	 * Disabling this does not affect explicit calls to `requestPlaceholderResend`.
+	 */
+	enablePlaceholderResend: boolean
+
+	/**
 	 * Returns if a jid should be ignored,
 	 * no event for that jid will be triggered.
 	 * Messages from that jid will also not be decrypted
